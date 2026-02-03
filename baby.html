@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Will You Be My Valentine? 💖</title>
+
+<style>
+    * { box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+
+    body {
+        margin: 0;
+        height: 100vh;
+        background: linear-gradient(135deg, #ff758c, #ff7eb3);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+    }
+
+    .box {
+        background: white;
+        padding: 30px;
+        border-radius: 20px;
+        text-align: center;
+        width: 90%;
+        max-width: 420px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        position: relative;
+    }
+
+    h1 { color: #ff4d6d; }
+    p { color: #555; }
+
+    .buttons {
+        margin-top: 25px;
+        position: relative;
+        height: 120px;
+    }
+
+    button {
+        padding: 12px 25px;
+        font-size: 16px;
+        border-radius: 30px;
+        border: none;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    #yes {
+        background: #ff4d6d;
+        color: white;
+    }
+
+    #yes:hover {
+        transform: scale(1.1);
+    }
+
+    #no {
+        background: #ddd;
+        color: #333;
+        position: absolute;
+        left: 130px;
+        top: 50px;
+    }
+
+    .hidden { display: none; }
+
+    /* Meme images */
+    .meme {
+        width: 100%;
+        border-radius: 15px;
+        margin-top: 20px;
+        animation: pop 0.5s ease;
+    }
+
+    @keyframes pop {
+        from { transform: scale(0.5); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+
+    /* Crying meme popup */
+    .cry {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 150px;
+        opacity: 0;
+        animation: cryPop 1.5s ease forwards;
+        z-index: 10;
+    }
+
+    @keyframes cryPop {
+        0% { opacity: 0; transform: translate(-50%, 20px); }
+        50% { opacity: 1; }
+        100% { opacity: 0; transform: translate(-50%, -20px); }
+    }
+
+    .heart {
+        position: fixed;
+        font-size: 22px;
+        animation: float 4s linear infinite;
+    }
+
+    @keyframes float {
+        from { transform: translateY(100vh); opacity: 1; }
+        to { transform: translateY(-10vh); opacity: 0; }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="box" id="question">
+    <h1>💖 Hey babii 💖</h1>
+    <p>Will you be my Valentine?</p>
+
+    <div class="buttons">
+        <button id="yes">Yes 💘</button>
+        <button id="no">No 🙈</button>
+    </div>
+</div>
+
+<div class="box hidden" id="answer">
+    <h1>🥰 SHE SAID YES!</h1>
+    <p>Best decision ever 💕</p>
+    <img src="yes-meme.jpg" alt="Valentine Meme" class="meme">
+</div>
+
+<img src="no-cry.jpg" id="cryImg" class="cry">
+
+<script>
+const noBtn = document.getElementById("no");
+const yesBtn = document.getElementById("yes");
+const question = document.getElementById("question");
+const answer = document.getElementById("answer");
+const cryImg = document.getElementById("cryImg");
+
+function moveNoButton() {
+    const x = Math.random() * 260;
+    const y = Math.random() * 80;
+    noBtn.style.left = x + "px";
+    noBtn.style.top = y + "px";
+
+    // show crying meme briefly
+    cryImg.style.opacity = "1";
+    cryImg.style.animation = "none";
+    cryImg.offsetHeight; // reset animation
+    cryImg.style.animation = "cryPop 1.5s ease forwards";
+}
+
+// NO runs away
+noBtn.addEventListener("mouseover", moveNoButton);
+noBtn.addEventListener("click", moveNoButton);
+
+// YES accepted
+yesBtn.addEventListener("click", () => {
+    question.classList.add("hidden");
+    answer.classList.remove("hidden");
+    releaseHearts();
+});
+
+function releaseHearts() {
+    for (let i = 0; i < 35; i++) {
+        const heart = document.createElement("div");
+        heart.className = "heart";
+        heart.innerHTML = "💖";
+        heart.style.left = Math.random() * 100 + "vw";
+        heart.style.animationDuration = (Math.random() * 2 + 3) + "s";
+        document.body.appendChild(heart);
+        setTimeout(() => heart.remove(), 5000);
+    }
+}
+</script>
+
+</body>
+</html>
