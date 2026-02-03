@@ -1,106 +1,172 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Will You Be My Valentine? 💖</title>
+<title>For You, Baby 💜</title>
 
 <style>
-    * { box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+    * {
+        box-sizing: border-box;
+        font-family: 'Poppins', sans-serif;
+    }
 
     body {
         margin: 0;
+        background: linear-gradient(135deg, #6a0dad, #b388eb);
         height: 100vh;
-        background: linear-gradient(135deg, #ff758c, #ff7eb3);
         display: flex;
         justify-content: center;
         align-items: center;
-        overflow: hidden;
-    }
-
-    .box {
-        background: white;
-        padding: 30px;
-        border-radius: 20px;
-        text-align: center;
-        width: 90%;
-        max-width: 420px;
-        box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-        position: relative;
-    }
-
-    h1 { color: #ff4d6d; }
-    p { color: #555; }
-
-    .buttons {
-        margin-top: 25px;
-        position: relative;
-        height: 120px;
-    }
-
-    button {
-        padding: 12px 25px;
-        font-size: 16px;
-        border-radius: 30px;
-        border: none;
-        cursor: pointer;
-        transition: 0.3s;
-    }
-
-    #yes {
-        background: #ff4d6d;
         color: white;
     }
 
-    #yes:hover {
+    .container {
+        text-align: center;
+        background: rgba(255,255,255,0.15);
+        padding: 25px;
+        border-radius: 20px;
+        backdrop-filter: blur(10px);
+        width: 90%;
+        max-width: 420px;
+    }
+
+    h1 {
+        margin-bottom: 10px;
+    }
+
+    canvas {
+        background: #2c003e;
+        border-radius: 15px;
+        display: block;
+        margin: 15px auto;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    button {
+        background: #8e44ad;
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        font-size: 16px;
+        border-radius: 30px;
+        cursor: pointer;
+        transition: 0.3s;
+        margin: 10px;
+    }
+
+    button:hover {
         transform: scale(1.1);
     }
+</style>
+</head>
 
-    #no {
-        background: #ddd;
-        color: #333;
-        position: absolute;
-        left: 130px;
-        top: 50px;
+<body>
+
+<div class="container" id="gameBox">
+    <h1>💜 Hi Baby 💜</h1>
+    <p>Eat 3 hearts to unlock something special</p>
+    <canvas id="game" width="300" height="300"></canvas>
+    <p>Score: <span id="score">0</span>/3</p>
+</div>
+
+<div class="container hidden" id="inviteBox">
+    <h1>🥺👉👈</h1>
+    <p>Baby...</p>
+    <p><strong>Will you be my Valentine?</strong> 💜</p>
+    <button onclick="yes()">Yes 💜</button>
+    <button onclick="no()">No 😢</button>
+</div>
+
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+const box = 15;
+let snake = [{ x: 150, y: 150 }];
+let food = randomFood();
+let dir = "RIGHT";
+let score = 0;
+let gameRunning = true;
+
+document.addEventListener("keydown", direction);
+
+function direction(event) {
+    if (event.keyCode === 37 && dir !== "RIGHT") dir = "LEFT";
+    else if (event.keyCode === 38 && dir !== "DOWN") dir = "UP";
+    else if (event.keyCode === 39 && dir !== "LEFT") dir = "RIGHT";
+    else if (event.keyCode === 40 && dir !== "UP") dir = "DOWN";
+}
+
+function randomFood() {
+    return {
+        x: Math.floor(Math.random() * 20) * box,
+        y: Math.floor(Math.random() * 20) * box
+    };
+}
+
+function draw() {
+    if (!gameRunning) return;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Snake
+    for (let i = 0; i < snake.length; i++) {
+        ctx.fillStyle = i === 0 ? "#d8b4fe" : "#8e44ad";
+        ctx.fillRect(snake[i].x, snake[i].y, box, box);
     }
 
-    .hidden { display: none; }
+    // Food (heart color)
+    ctx.fillStyle = "#ff9ff3";
+    ctx.fillRect(food.x, food.y, box, box);
 
-    /* Meme images */
-    .meme {
-        width: 100%;
-        border-radius: 15px;
-        margin-top: 20px;
-        animation: pop 0.5s ease;
+    let headX = snake[0].x;
+    let headY = snake[0].y;
+
+    if (dir === "LEFT") headX -= box;
+    if (dir === "UP") headY -= box;
+    if (dir === "RIGHT") headX += box;
+    if (dir === "DOWN") headY += box;
+
+    // Eat food
+    if (headX === food.x && headY === food.y) {
+        score++;
+        document.getElementById("score").innerText = score;
+        food = randomFood();
+
+        if (score >= 3) {
+            gameRunning = false;
+            setTimeout(showInvite, 500);
+        }
+    } else {
+        snake.pop();
     }
 
-    @keyframes pop {
-        from { transform: scale(0.5); opacity: 0; }
-        to { transform: scale(1); opacity: 1; }
-    }
+    const newHead = { x: headX, y: headY };
+    snake.unshift(newHead);
+}
 
-    /* Crying meme popup */
-    .cry {
-        position: fixed;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 150px;
-        opacity: 0;
-        animation: cryPop 1.5s ease forwards;
-        z-index: 10;
-    }
+function showInvite() {
+    document.getElementById("gameBox").classList.add("hidden");
+    document.getElementById("inviteBox").classList.remove("hidden");
+}
 
-    @keyframes cryPop {
-        0% { opacity: 0; transform: translate(-50%, 20px); }
-        50% { opacity: 1; }
-        100% { opacity: 0; transform: translate(-50%, -20px); }
-    }
+function yes() {
+    alert("💜 YAY BABY 💜 See you on our Valentine’s date!");
+}
 
-    .heart {
-        position: fixed;
-        font-size: 22px;
-        animation: float 4s linear infinite;
+function no() {
+    alert("😢 That's okay baby... I still choose you 💜");
+}
+
+setInterval(draw, 120);
+</script>
+
+</body>
+</html>
     }
 
     @keyframes float {
